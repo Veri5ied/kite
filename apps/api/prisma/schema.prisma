@@ -68,17 +68,17 @@ enum PayoutStatus {
 }
 
 model User {
-  id             String              @id @default(cuid())
-  email          String              @unique
-  passwordHash   String
-  wallet         Wallet?
-  deposits       Deposit[]
-  fxQuotes       FxQuote[]
-  conversions    Conversion[]
-  payouts        Payout[]
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  passwordHash       String
+  wallet             Wallet?
+  deposits           Deposit[]
+  fxQuotes           FxQuote[]
+  conversions        Conversion[]
+  payouts            Payout[]
   ledgerTransactions LedgerTransaction[]
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 }
 
 model Wallet {
@@ -95,42 +95,42 @@ model Wallet {
 }
 
 model LedgerAccount {
-  id                   String        @id @default(cuid())
-  walletId             String?
-  wallet               Wallet?       @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  currency             Currency
-  type                 LedgerAccountType
-  code                 String        @unique
-  name                 String
-  entries              LedgerEntry[]
-  sourceDeposits       Deposit[]     @relation("DepositDestinationAccount")
-  sourceQuotes         FxQuote[]     @relation("QuoteSourceAccount")
-  targetQuotes         FxQuote[]     @relation("QuoteTargetAccount")
-  sourceConversions    Conversion[]  @relation("ConversionSourceAccount")
-  targetConversions    Conversion[]  @relation("ConversionTargetAccount")
-  sourcePayouts        Payout[]      @relation("PayoutSourceAccount")
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
+  id                String            @id @default(cuid())
+  walletId          String?
+  wallet            Wallet?           @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  currency          Currency
+  type              LedgerAccountType
+  code              String            @unique
+  name              String
+  entries           LedgerEntry[]
+  sourceDeposits    Deposit[]         @relation("DepositDestinationAccount")
+  sourceQuotes      FxQuote[]         @relation("QuoteSourceAccount")
+  targetQuotes      FxQuote[]         @relation("QuoteTargetAccount")
+  sourceConversions Conversion[]      @relation("ConversionSourceAccount")
+  targetConversions Conversion[]      @relation("ConversionTargetAccount")
+  sourcePayouts     Payout[]          @relation("PayoutSourceAccount")
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
   @@unique([walletId, currency, type], map: "wallet_currency_type_unique")
 }
 
 model LedgerTransaction {
-  id                   String                  @id @default(cuid())
-  userId               String?
-  user                 User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
-  type                 LedgerTransactionType
-  status               LedgerTransactionStatus @default(PENDING)
-  reference            String                  @unique
-  narration            String?
-  idempotencyKey       String?                 @unique
-  entries              LedgerEntry[]
-  deposit              Deposit?
-  conversion           Conversion?
-  payout               Payout?                 @relation("PayoutSettlementTransaction")
-  payoutReversal       Payout?                 @relation("PayoutReversalTransaction")
-  createdAt            DateTime                @default(now())
-  updatedAt            DateTime                @updatedAt
+  id             String                  @id @default(cuid())
+  userId         String?
+  user           User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type           LedgerTransactionType
+  status         LedgerTransactionStatus @default(PENDING)
+  reference      String                  @unique
+  narration      String?
+  idempotencyKey String?                 @unique
+  entries        LedgerEntry[]
+  deposit        Deposit?
+  conversion     Conversion?
+  payout         Payout?                 @relation("PayoutSettlementTransaction")
+  payoutReversal Payout?                 @relation("PayoutReversalTransaction")
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
 }
 
 model LedgerEntry {
@@ -149,47 +149,47 @@ model LedgerEntry {
 }
 
 model Deposit {
-  id                   String          @id @default(cuid())
+  id                   String             @id @default(cuid())
   userId               String
-  user                 User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   walletId             String
-  wallet               Wallet          @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  wallet               Wallet             @relation(fields: [walletId], references: [id], onDelete: Cascade)
   destinationAccountId String
-  destinationAccount   LedgerAccount   @relation("DepositDestinationAccount", fields: [destinationAccountId], references: [id], onDelete: Restrict)
+  destinationAccount   LedgerAccount      @relation("DepositDestinationAccount", fields: [destinationAccountId], references: [id], onDelete: Restrict)
   currency             Currency
   amountMinor          BigInt
-  status               DepositStatus   @default(PENDING)
-  idempotencyKey       String          @unique
-  ledgerTransactionId  String?         @unique
+  status               DepositStatus      @default(PENDING)
+  idempotencyKey       String             @unique
+  ledgerTransactionId  String?            @unique
   ledgerTransaction    LedgerTransaction? @relation(fields: [ledgerTransactionId], references: [id], onDelete: SetNull)
-  createdAt            DateTime        @default(now())
-  updatedAt            DateTime        @updatedAt
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
 }
 
 model FxQuote {
-  id                 String         @id @default(cuid())
-  userId             String
-  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  walletId           String
-  wallet             Wallet         @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  sourceAccountId    String
-  sourceAccount      LedgerAccount  @relation("QuoteSourceAccount", fields: [sourceAccountId], references: [id], onDelete: Restrict)
-  targetAccountId    String
-  targetAccount      LedgerAccount  @relation("QuoteTargetAccount", fields: [targetAccountId], references: [id], onDelete: Restrict)
-  sourceCurrency     Currency
-  targetCurrency     Currency
-  sourceAmountMinor  BigInt
-  targetAmountMinor  BigInt
-  baseRate           Decimal        @db.Decimal(20, 10)
-  quotedRate         Decimal        @db.Decimal(20, 10)
-  spreadBps          Int
-  feeAmountMinor     BigInt         @default(0)
-  expiresAt          DateTime
-  consumedAt         DateTime?
-  status             FxQuoteStatus  @default(ACTIVE)
-  conversion         Conversion?
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  id                String        @id @default(cuid())
+  userId            String
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId          String
+  wallet            Wallet        @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  sourceAccountId   String
+  sourceAccount     LedgerAccount @relation("QuoteSourceAccount", fields: [sourceAccountId], references: [id], onDelete: Restrict)
+  targetAccountId   String
+  targetAccount     LedgerAccount @relation("QuoteTargetAccount", fields: [targetAccountId], references: [id], onDelete: Restrict)
+  sourceCurrency    Currency
+  targetCurrency    Currency
+  sourceAmountMinor BigInt
+  targetAmountMinor BigInt
+  baseRate          Decimal       @db.Decimal(20, 10)
+  quotedRate        Decimal       @db.Decimal(20, 10)
+  spreadBps         Int
+  feeAmountMinor    BigInt        @default(0)
+  expiresAt         DateTime
+  consumedAt        DateTime?
+  status            FxQuoteStatus @default(ACTIVE)
+  conversion        Conversion?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }
 
 model Conversion {
