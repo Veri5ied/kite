@@ -39,4 +39,48 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
-
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model Wallet
+ * 
+ */
+export type Wallet = Prisma.WalletModel
+/**
+ * Model LedgerAccount
+ * 
+ */
+export type LedgerAccount = Prisma.LedgerAccountModel
+/**
+ * Model LedgerTransaction
+ * 
+ */
+export type LedgerTransaction = Prisma.LedgerTransactionModel
+/**
+ * Model LedgerEntry
+ * 
+ */
+export type LedgerEntry = Prisma.LedgerEntryModel
+/**
+ * Model Deposit
+ * 
+ */
+export type Deposit = Prisma.DepositModel
+/**
+ * Model FxQuote
+ * 
+ */
+export type FxQuote = Prisma.FxQuoteModel
+/**
+ * Model Conversion
+ * 
+ */
+export type Conversion = Prisma.ConversionModel
+/**
+ * Model Payout
+ * 
+ */
+export type Payout = Prisma.PayoutModel

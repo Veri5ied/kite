@@ -9,7 +9,88 @@
 * 🟢 You can import this file directly.
 */
 
+export const Currency = {
+  USD: 'USD',
+  GBP: 'GBP',
+  EUR: 'EUR',
+  NGN: 'NGN',
+  KES: 'KES'
+} as const
+
+export type Currency = (typeof Currency)[keyof typeof Currency]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const LedgerAccountType = {
+  USER_ASSET: 'USER_ASSET',
+  SYSTEM_CLEARING: 'SYSTEM_CLEARING',
+  SYSTEM_REVENUE: 'SYSTEM_REVENUE',
+  SYSTEM_PAYOUT_CLEARING: 'SYSTEM_PAYOUT_CLEARING'
+} as const
+
+export type LedgerAccountType = (typeof LedgerAccountType)[keyof typeof LedgerAccountType]
+
+
+export const LedgerTransactionType = {
+  DEPOSIT: 'DEPOSIT',
+  CONVERSION: 'CONVERSION',
+  PAYOUT: 'PAYOUT',
+  PAYOUT_REVERSAL: 'PAYOUT_REVERSAL'
+} as const
+
+export type LedgerTransactionType = (typeof LedgerTransactionType)[keyof typeof LedgerTransactionType]
+
+
+export const LedgerTransactionStatus = {
+  PENDING: 'PENDING',
+  POSTED: 'POSTED',
+  REVERSED: 'REVERSED',
+  FAILED: 'FAILED'
+} as const
+
+export type LedgerTransactionStatus = (typeof LedgerTransactionStatus)[keyof typeof LedgerTransactionStatus]
+
+
+export const LedgerEntryDirection = {
+  DEBIT: 'DEBIT',
+  CREDIT: 'CREDIT'
+} as const
+
+export type LedgerEntryDirection = (typeof LedgerEntryDirection)[keyof typeof LedgerEntryDirection]
+
+
+export const DepositStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type DepositStatus = (typeof DepositStatus)[keyof typeof DepositStatus]
+
+
+export const FxQuoteStatus = {
+  ACTIVE: 'ACTIVE',
+  EXECUTED: 'EXECUTED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type FxQuoteStatus = (typeof FxQuoteStatus)[keyof typeof FxQuoteStatus]
+
+
+export const ConversionStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type ConversionStatus = (typeof ConversionStatus)[keyof typeof ConversionStatus]
+
+
+export const PayoutStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  SUCCESSFUL: 'SUCCESSFUL',
+  FAILED: 'FAILED'
+} as const
+
+export type PayoutStatus = (typeof PayoutStatus)[keyof typeof PayoutStatus]

@@ -17,4 +17,48 @@ import * as Prisma from './internal/prismaNamespaceBrowser'
 export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
-
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model Wallet
+ * 
+ */
+export type Wallet = Prisma.WalletModel
+/**
+ * Model LedgerAccount
+ * 
+ */
+export type LedgerAccount = Prisma.LedgerAccountModel
+/**
+ * Model LedgerTransaction
+ * 
+ */
+export type LedgerTransaction = Prisma.LedgerTransactionModel
+/**
+ * Model LedgerEntry
+ * 
+ */
+export type LedgerEntry = Prisma.LedgerEntryModel
+/**
+ * Model Deposit
+ * 
+ */
+export type Deposit = Prisma.DepositModel
+/**
+ * Model FxQuote
+ * 
+ */
+export type FxQuote = Prisma.FxQuoteModel
+/**
+ * Model Conversion
+ * 
+ */
+export type Conversion = Prisma.ConversionModel
+/**
+ * Model Payout
+ * 
+ */
+export type Payout = Prisma.PayoutModel

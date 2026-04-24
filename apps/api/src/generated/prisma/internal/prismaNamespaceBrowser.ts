@@ -51,7 +51,15 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  User: 'User',
+  Wallet: 'Wallet',
+  LedgerAccount: 'LedgerAccount',
+  LedgerTransaction: 'LedgerTransaction',
+  LedgerEntry: 'LedgerEntry',
+  Deposit: 'Deposit',
+  FxQuote: 'FxQuote',
+  Conversion: 'Conversion',
+  Payout: 'Payout'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +76,178 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  passwordHash: 'passwordHash',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const WalletScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WalletScalarFieldEnum = (typeof WalletScalarFieldEnum)[keyof typeof WalletScalarFieldEnum]
+
+
+export const LedgerAccountScalarFieldEnum = {
+  id: 'id',
+  walletId: 'walletId',
+  currency: 'currency',
+  type: 'type',
+  code: 'code',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LedgerAccountScalarFieldEnum = (typeof LedgerAccountScalarFieldEnum)[keyof typeof LedgerAccountScalarFieldEnum]
+
+
+export const LedgerTransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  status: 'status',
+  reference: 'reference',
+  narration: 'narration',
+  idempotencyKey: 'idempotencyKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LedgerTransactionScalarFieldEnum = (typeof LedgerTransactionScalarFieldEnum)[keyof typeof LedgerTransactionScalarFieldEnum]
+
+
+export const LedgerEntryScalarFieldEnum = {
+  id: 'id',
+  ledgerTransactionId: 'ledgerTransactionId',
+  accountId: 'accountId',
+  direction: 'direction',
+  currency: 'currency',
+  amountMinor: 'amountMinor',
+  createdAt: 'createdAt'
+} as const
+
+export type LedgerEntryScalarFieldEnum = (typeof LedgerEntryScalarFieldEnum)[keyof typeof LedgerEntryScalarFieldEnum]
+
+
+export const DepositScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  walletId: 'walletId',
+  destinationAccountId: 'destinationAccountId',
+  currency: 'currency',
+  amountMinor: 'amountMinor',
+  status: 'status',
+  idempotencyKey: 'idempotencyKey',
+  ledgerTransactionId: 'ledgerTransactionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DepositScalarFieldEnum = (typeof DepositScalarFieldEnum)[keyof typeof DepositScalarFieldEnum]
+
+
+export const FxQuoteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  walletId: 'walletId',
+  sourceAccountId: 'sourceAccountId',
+  targetAccountId: 'targetAccountId',
+  sourceCurrency: 'sourceCurrency',
+  targetCurrency: 'targetCurrency',
+  sourceAmountMinor: 'sourceAmountMinor',
+  targetAmountMinor: 'targetAmountMinor',
+  baseRate: 'baseRate',
+  quotedRate: 'quotedRate',
+  spreadBps: 'spreadBps',
+  feeAmountMinor: 'feeAmountMinor',
+  expiresAt: 'expiresAt',
+  consumedAt: 'consumedAt',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FxQuoteScalarFieldEnum = (typeof FxQuoteScalarFieldEnum)[keyof typeof FxQuoteScalarFieldEnum]
+
+
+export const ConversionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  walletId: 'walletId',
+  quoteId: 'quoteId',
+  sourceAccountId: 'sourceAccountId',
+  targetAccountId: 'targetAccountId',
+  sourceCurrency: 'sourceCurrency',
+  targetCurrency: 'targetCurrency',
+  sourceAmountMinor: 'sourceAmountMinor',
+  targetAmountMinor: 'targetAmountMinor',
+  quotedRate: 'quotedRate',
+  bookedRate: 'bookedRate',
+  spreadBps: 'spreadBps',
+  feeAmountMinor: 'feeAmountMinor',
+  status: 'status',
+  ledgerTransactionId: 'ledgerTransactionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversionScalarFieldEnum = (typeof ConversionScalarFieldEnum)[keyof typeof ConversionScalarFieldEnum]
+
+
+export const PayoutScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  walletId: 'walletId',
+  sourceAccountId: 'sourceAccountId',
+  sourceCurrency: 'sourceCurrency',
+  destinationCurrency: 'destinationCurrency',
+  amountMinor: 'amountMinor',
+  recipientAccountNumber: 'recipientAccountNumber',
+  recipientBankCode: 'recipientBankCode',
+  recipientAccountName: 'recipientAccountName',
+  status: 'status',
+  failureReason: 'failureReason',
+  ledgerTransactionId: 'ledgerTransactionId',
+  reversalLedgerTransactionId: 'reversalLedgerTransactionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PayoutScalarFieldEnum = (typeof PayoutScalarFieldEnum)[keyof typeof PayoutScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

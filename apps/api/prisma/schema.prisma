@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,243 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Currency {
+  USD
+  GBP
+  EUR
+  NGN
+  KES
+}
+
+enum LedgerAccountType {
+  USER_ASSET
+  SYSTEM_CLEARING
+  SYSTEM_REVENUE
+  SYSTEM_PAYOUT_CLEARING
+}
+
+enum LedgerTransactionType {
+  DEPOSIT
+  CONVERSION
+  PAYOUT
+  PAYOUT_REVERSAL
+}
+
+enum LedgerTransactionStatus {
+  PENDING
+  POSTED
+  REVERSED
+  FAILED
+}
+
+enum LedgerEntryDirection {
+  DEBIT
+  CREDIT
+}
+
+enum DepositStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum FxQuoteStatus {
+  ACTIVE
+  EXECUTED
+  EXPIRED
+  CANCELLED
+}
+
+enum ConversionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  SUCCESSFUL
+  FAILED
+}
+
+model User {
+  id             String              @id @default(cuid())
+  email          String              @unique
+  passwordHash   String
+  wallet         Wallet?
+  deposits       Deposit[]
+  fxQuotes       FxQuote[]
+  conversions    Conversion[]
+  payouts        Payout[]
+  ledgerTransactions LedgerTransaction[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model Wallet {
+  id          String          @id @default(cuid())
+  userId      String          @unique
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accounts    LedgerAccount[]
+  deposits    Deposit[]
+  fxQuotes    FxQuote[]
+  conversions Conversion[]
+  payouts     Payout[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model LedgerAccount {
+  id                   String        @id @default(cuid())
+  walletId             String?
+  wallet               Wallet?       @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  currency             Currency
+  type                 LedgerAccountType
+  code                 String        @unique
+  name                 String
+  entries              LedgerEntry[]
+  sourceDeposits       Deposit[]     @relation("DepositDestinationAccount")
+  sourceQuotes         FxQuote[]     @relation("QuoteSourceAccount")
+  targetQuotes         FxQuote[]     @relation("QuoteTargetAccount")
+  sourceConversions    Conversion[]  @relation("ConversionSourceAccount")
+  targetConversions    Conversion[]  @relation("ConversionTargetAccount")
+  sourcePayouts        Payout[]      @relation("PayoutSourceAccount")
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  @@unique([walletId, currency, type], map: "wallet_currency_type_unique")
+}
+
+model LedgerTransaction {
+  id                   String                  @id @default(cuid())
+  userId               String?
+  user                 User?                   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type                 LedgerTransactionType
+  status               LedgerTransactionStatus @default(PENDING)
+  reference            String                  @unique
+  narration            String?
+  idempotencyKey       String?                 @unique
+  entries              LedgerEntry[]
+  deposit              Deposit?
+  conversion           Conversion?
+  payout               Payout?                 @relation("PayoutSettlementTransaction")
+  payoutReversal       Payout?                 @relation("PayoutReversalTransaction")
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+}
+
+model LedgerEntry {
+  id                  String               @id @default(cuid())
+  ledgerTransactionId String
+  ledgerTransaction   LedgerTransaction    @relation(fields: [ledgerTransactionId], references: [id], onDelete: Cascade)
+  accountId           String
+  account             LedgerAccount        @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  direction           LedgerEntryDirection
+  currency            Currency
+  amountMinor         BigInt
+  createdAt           DateTime             @default(now())
+
+  @@index([ledgerTransactionId])
+  @@index([accountId, currency])
+}
+
+model Deposit {
+  id                   String          @id @default(cuid())
+  userId               String
+  user                 User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId             String
+  wallet               Wallet          @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  destinationAccountId String
+  destinationAccount   LedgerAccount   @relation("DepositDestinationAccount", fields: [destinationAccountId], references: [id], onDelete: Restrict)
+  currency             Currency
+  amountMinor          BigInt
+  status               DepositStatus   @default(PENDING)
+  idempotencyKey       String          @unique
+  ledgerTransactionId  String?         @unique
+  ledgerTransaction    LedgerTransaction? @relation(fields: [ledgerTransactionId], references: [id], onDelete: SetNull)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+}
+
+model FxQuote {
+  id                 String         @id @default(cuid())
+  userId             String
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId           String
+  wallet             Wallet         @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  sourceAccountId    String
+  sourceAccount      LedgerAccount  @relation("QuoteSourceAccount", fields: [sourceAccountId], references: [id], onDelete: Restrict)
+  targetAccountId    String
+  targetAccount      LedgerAccount  @relation("QuoteTargetAccount", fields: [targetAccountId], references: [id], onDelete: Restrict)
+  sourceCurrency     Currency
+  targetCurrency     Currency
+  sourceAmountMinor  BigInt
+  targetAmountMinor  BigInt
+  baseRate           Decimal        @db.Decimal(20, 10)
+  quotedRate         Decimal        @db.Decimal(20, 10)
+  spreadBps          Int
+  feeAmountMinor     BigInt         @default(0)
+  expiresAt          DateTime
+  consumedAt         DateTime?
+  status             FxQuoteStatus  @default(ACTIVE)
+  conversion         Conversion?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model Conversion {
+  id                  String             @id @default(cuid())
+  userId              String
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId            String
+  wallet              Wallet             @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  quoteId             String             @unique
+  quote               FxQuote            @relation(fields: [quoteId], references: [id], onDelete: Restrict)
+  sourceAccountId     String
+  sourceAccount       LedgerAccount      @relation("ConversionSourceAccount", fields: [sourceAccountId], references: [id], onDelete: Restrict)
+  targetAccountId     String
+  targetAccount       LedgerAccount      @relation("ConversionTargetAccount", fields: [targetAccountId], references: [id], onDelete: Restrict)
+  sourceCurrency      Currency
+  targetCurrency      Currency
+  sourceAmountMinor   BigInt
+  targetAmountMinor   BigInt
+  quotedRate          Decimal            @db.Decimal(20, 10)
+  bookedRate          Decimal            @db.Decimal(20, 10)
+  spreadBps           Int
+  feeAmountMinor      BigInt             @default(0)
+  status              ConversionStatus   @default(PENDING)
+  ledgerTransactionId String?            @unique
+  ledgerTransaction   LedgerTransaction? @relation(fields: [ledgerTransactionId], references: [id], onDelete: SetNull)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+}
+
+model Payout {
+  id                          String             @id @default(cuid())
+  userId                      String
+  user                        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId                    String
+  wallet                      Wallet             @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  sourceAccountId             String
+  sourceAccount               LedgerAccount      @relation("PayoutSourceAccount", fields: [sourceAccountId], references: [id], onDelete: Restrict)
+  sourceCurrency              Currency
+  destinationCurrency         Currency
+  amountMinor                 BigInt
+  recipientAccountNumber      String
+  recipientBankCode           String
+  recipientAccountName        String
+  status                      PayoutStatus       @default(PENDING)
+  failureReason               String?
+  ledgerTransactionId         String?            @unique
+  ledgerTransaction           LedgerTransaction? @relation("PayoutSettlementTransaction", fields: [ledgerTransactionId], references: [id], onDelete: SetNull)
+  reversalLedgerTransactionId String?            @unique
+  reversalLedgerTransaction   LedgerTransaction? @relation("PayoutReversalTransaction", fields: [reversalLedgerTransactionId], references: [id], onDelete: SetNull)
+  createdAt                   DateTime           @default(now())
+  updatedAt                   DateTime           @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
 }
