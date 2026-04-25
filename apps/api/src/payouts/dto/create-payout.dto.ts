@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsEnum,
@@ -9,9 +10,11 @@ import {
 import { Currency } from '../../generated/prisma/enums';
 
 export class CreatePayoutDto {
+  @ApiProperty({ enum: Currency, example: Currency.NGN })
   @IsEnum(Currency)
   sourceCurrency!: Currency;
 
+  @ApiProperty({ example: '1000.00' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @Matches(/^\d+(\.\d{1,2})?$/, {
@@ -19,6 +22,7 @@ export class CreatePayoutDto {
   })
   amount!: string;
 
+  @ApiProperty({ example: '1234567891' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @Matches(/^\d+$/, {
@@ -28,6 +32,7 @@ export class CreatePayoutDto {
   @MaxLength(20)
   recipientAccountNumber!: string;
 
+  @ApiProperty({ example: 'NG001' })
   @Transform(({ value }) =>
     typeof value === 'string' ? value.trim().toUpperCase() : value,
   )
@@ -36,6 +41,7 @@ export class CreatePayoutDto {
   @MaxLength(10)
   recipientBankCode!: string;
 
+  @ApiProperty({ example: 'Jane Doe' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @MinLength(2)
