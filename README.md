@@ -55,7 +55,7 @@ pnpm prisma:generate
 4. Start the API
 
 ```bash
-cd /Users/veri5ied/Desktop/kite
+cd kite
 pnpm --filter api start:dev
 ```
 
