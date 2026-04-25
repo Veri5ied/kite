@@ -69,6 +69,11 @@ Raw OpenAPI JSON is also available at:
 
 `http://localhost:3000/api/openapi.json`
 
+## Deployment Note
+
+- the backend is deployed on Render's free tier, so the API may sleep after inactivity and take a few seconds to wake up on the first request
+- the frontend is deployed on Vercel
+
 ## Core Endpoints
 
 Auth:
