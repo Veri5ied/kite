@@ -55,6 +55,23 @@ export class TransactionsService {
       take,
     });
 
+    const payouts = await this.prisma.payout.findMany({
+      where: {
+        userId: authenticatedUser.sub,
+      },
+      include: {
+        sourceAccount: {
+          select: {
+            id: true,
+            code: true,
+            currency: true,
+          },
+        },
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take,
+    });
+
     const normalizedDeposits = deposits.map((deposit) => ({
       cursorId: `deposit:${deposit.id}`,
       id: deposit.id,
@@ -103,7 +120,35 @@ export class TransactionsService {
       },
     }));
 
-    const merged = [...normalizedDeposits, ...normalizedConversions].sort(
+    const normalizedPayouts = payouts.map((payout) => ({
+      cursorId: `payout:${payout.id}`,
+      id: payout.id,
+      type: 'payout' as const,
+      status: payout.status,
+      amountMinor: payout.amountMinor.toString(),
+      sourceAmountMinor: payout.amountMinor.toString(),
+      destinationAmountMinor: payout.amountMinor.toString(),
+      sourceCurrency: payout.sourceCurrency,
+      destinationCurrency: payout.destinationCurrency,
+      timestamp: payout.createdAt,
+      account: {
+        id: payout.sourceAccount.id,
+        code: payout.sourceAccount.code,
+        currency: payout.sourceAccount.currency,
+      },
+      recipient: {
+        accountNumber: payout.recipientAccountNumber,
+        bankCode: payout.recipientBankCode,
+        accountName: payout.recipientAccountName,
+      },
+      failureReason: payout.failureReason,
+    }));
+
+    const merged = [
+      ...normalizedDeposits,
+      ...normalizedConversions,
+      ...normalizedPayouts,
+    ].sort(
       (left, right) => {
         const timestampDiff =
           right.timestamp.getTime() - left.timestamp.getTime();
@@ -116,9 +161,19 @@ export class TransactionsService {
       },
     );
 
-    const filtered = query.cursor
-      ? merged.filter((item) => item.cursorId < query.cursor!)
-      : merged;
+    const filtered = (() => {
+      if (!query.cursor) {
+        return merged;
+      }
+
+      const cursorIndex = merged.findIndex((item) => item.cursorId === query.cursor);
+
+      if (cursorIndex === -1) {
+        return merged;
+      }
+
+      return merged.slice(cursorIndex + 1);
+    })();
 
     const hasMore = filtered.length > limit;
     const pageItems = hasMore ? filtered.slice(0, limit) : filtered;

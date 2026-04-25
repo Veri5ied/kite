@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConversionsModule } from './conversions/conversions.module';
 import { DepositsModule } from './deposits/deposits.module';
+import { PayoutsModule } from './payouts/payouts.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TransactionsModule } from './transactions/transactions.module';
 
@@ -15,6 +16,7 @@ import { TransactionsModule } from './transactions/transactions.module';
     AuthModule,
     ConversionsModule,
     DepositsModule,
+    PayoutsModule,
     TransactionsModule,
   ],
   controllers: [AppController],
