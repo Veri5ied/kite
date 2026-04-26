@@ -7,6 +7,7 @@ import {
   depositMutationOptions,
   payoutMutationOptions,
   recentTransactionsQueryOptions,
+  transactionsQueryOptions,
 } from "./queries";
 
 export function useWalletBalances() {
@@ -15,6 +16,10 @@ export function useWalletBalances() {
 
 export function useRecentTransactions() {
   return useQuery(recentTransactionsQueryOptions());
+}
+
+export function useTransactions(limit = 100) {
+  return useQuery(transactionsQueryOptions(limit));
 }
 
 export function useCreateDeposit(onSuccess?: () => void) {

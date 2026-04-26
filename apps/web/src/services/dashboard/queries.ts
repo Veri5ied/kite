@@ -3,6 +3,7 @@ import {
   createDeposit,
   createPayout,
   getRecentTransactions,
+  getTransactions,
   getWalletBalances,
 } from "./api";
 import type { CreateDepositInput, CreatePayoutInput } from "./types";
@@ -25,8 +26,16 @@ export function balancesQueryOptions() {
 
 export function recentTransactionsQueryOptions() {
   return queryOptions({
-    queryKey: dashboardKeys.transactions(),
+    queryKey: [...dashboardKeys.transactions(), "recent"],
     queryFn: getRecentTransactions,
+    staleTime: 15_000,
+  });
+}
+
+export function transactionsQueryOptions(limit = 100) {
+  return queryOptions({
+    queryKey: [...dashboardKeys.transactions(), limit],
+    queryFn: () => getTransactions(limit),
     staleTime: 15_000,
   });
 }

@@ -22,6 +22,16 @@ export async function getRecentTransactions() {
   return response.data;
 }
 
+export async function getTransactions(limit = 100) {
+  const response = await api.get<TransactionsResponse>("/transactions", {
+    params: {
+      limit,
+    },
+  });
+
+  return response.data;
+}
+
 export async function createDeposit(input: CreateDepositInput) {
   const response = await api.post("/deposits", input, {
     headers: {
