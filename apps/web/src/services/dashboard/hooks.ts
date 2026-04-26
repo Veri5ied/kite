@@ -3,8 +3,10 @@ import { toast } from "sonner";
 import { getErrorMessage } from "../../lib/http";
 import {
   balancesQueryOptions,
+  createQuoteMutationOptions,
   dashboardKeys,
   depositMutationOptions,
+  executeQuoteMutationOptions,
   payoutMutationOptions,
   recentTransactionsQueryOptions,
   transactionsQueryOptions,
@@ -56,6 +58,36 @@ export function useCreatePayout(onSuccess?: () => void) {
         }),
       ]);
       toast.success("Payout created successfully");
+      onSuccess?.();
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
+    },
+  });
+}
+
+export function useCreateQuote() {
+  return useMutation({
+    ...createQuoteMutationOptions(),
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
+    },
+  });
+}
+
+export function useExecuteQuote(onSuccess?: () => void) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    ...executeQuoteMutationOptions(),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: dashboardKeys.balances() }),
+        queryClient.invalidateQueries({
+          queryKey: dashboardKeys.transactions(),
+        }),
+      ]);
+      toast.success("Conversion completed successfully");
       onSuccess?.();
     },
     onError: (error) => {

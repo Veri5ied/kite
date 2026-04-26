@@ -1,12 +1,19 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import {
+  createQuote,
   createDeposit,
   createPayout,
+  executeQuote,
   getRecentTransactions,
   getTransactions,
   getWalletBalances,
 } from "./api";
-import type { CreateDepositInput, CreatePayoutInput } from "./types";
+import type {
+  CreateDepositInput,
+  CreatePayoutInput,
+  CreateQuoteInput,
+  ExecuteQuoteInput,
+} from "./types";
 
 export const dashboardKeys = {
   all: ["dashboard"] as const,
@@ -14,6 +21,8 @@ export const dashboardKeys = {
   transactions: () => [...dashboardKeys.all, "transactions"] as const,
   deposit: () => [...dashboardKeys.all, "deposit"] as const,
   payout: () => [...dashboardKeys.all, "payout"] as const,
+  quote: () => [...dashboardKeys.all, "quote"] as const,
+  executeQuote: () => [...dashboardKeys.all, "execute-quote"] as const,
 };
 
 export function balancesQueryOptions() {
@@ -51,5 +60,19 @@ export function payoutMutationOptions() {
   return mutationOptions({
     mutationKey: dashboardKeys.payout(),
     mutationFn: (input: CreatePayoutInput) => createPayout(input),
+  });
+}
+
+export function createQuoteMutationOptions() {
+  return mutationOptions({
+    mutationKey: dashboardKeys.quote(),
+    mutationFn: (input: CreateQuoteInput) => createQuote(input),
+  });
+}
+
+export function executeQuoteMutationOptions() {
+  return mutationOptions({
+    mutationKey: dashboardKeys.executeQuote(),
+    mutationFn: (input: ExecuteQuoteInput) => executeQuote(input),
   });
 }

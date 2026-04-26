@@ -1,7 +1,11 @@
 import { api } from "../../lib/api";
 import type {
+  CreateQuoteInput,
+  CreateQuoteResponse,
   CreateDepositInput,
   CreatePayoutInput,
+  ExecuteQuoteInput,
+  ExecuteQuoteResponse,
   TransactionsResponse,
   WalletBalancesResponse,
 } from "./types";
@@ -44,6 +48,24 @@ export async function createDeposit(input: CreateDepositInput) {
 
 export async function createPayout(input: CreatePayoutInput) {
   const response = await api.post("/payouts", input);
+
+  return response.data;
+}
+
+export async function createQuote(input: CreateQuoteInput) {
+  const response = await api.post<CreateQuoteResponse>(
+    "/conversions/quote",
+    input,
+  );
+
+  return response.data;
+}
+
+export async function executeQuote(input: ExecuteQuoteInput) {
+  const response = await api.post<ExecuteQuoteResponse>(
+    "/conversions/execute",
+    input,
+  );
 
   return response.data;
 }

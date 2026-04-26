@@ -64,3 +64,60 @@ export type CreatePayoutInput = {
   recipientAccountNumber: string;
   recipientAccountName: string;
 };
+
+export type CreateQuoteInput = {
+  sourceCurrency: SupportedCurrency;
+  targetCurrency: SupportedCurrency;
+  amount: string;
+};
+
+export type FxQuote = {
+  id: string;
+  sourceCurrency: SupportedCurrency;
+  targetCurrency: SupportedCurrency;
+  sourceAmountMinor: string;
+  targetAmountMinor: string;
+  baseRate: string;
+  quotedRate: string;
+  spreadBps: number;
+  feeAmountMinor: string;
+  expiresAt: string;
+  status: string;
+  createdAt: string;
+};
+
+export type CreateQuoteResponse = {
+  quote: FxQuote;
+};
+
+export type ExecuteQuoteInput = {
+  quoteId: string;
+};
+
+export type ExecuteQuoteResponse = {
+  conversion: {
+    id: string;
+    quoteId: string;
+    sourceCurrency: SupportedCurrency;
+    targetCurrency: SupportedCurrency;
+    sourceAmountMinor: string;
+    targetAmountMinor: string;
+    quotedRate: string;
+    bookedRate: string;
+    spreadBps: number;
+    status: string;
+    createdAt: string;
+  };
+  balances: {
+    source: {
+      accountId: string;
+      currency: SupportedCurrency;
+      balanceMinor: string;
+    };
+    target: {
+      accountId: string;
+      currency: SupportedCurrency;
+      balanceMinor: string;
+    };
+  };
+};

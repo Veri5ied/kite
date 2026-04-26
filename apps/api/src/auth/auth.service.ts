@@ -64,7 +64,7 @@ export class AuthService {
         },
       });
 
-      const accounts = await tx.ledgerAccount.createManyAndReturn({
+      await tx.ledgerAccount.createMany({
         data: SUPPORTED_CURRENCIES.map((currency) => ({
           walletId: wallet.id,
           currency,
@@ -72,6 +72,16 @@ export class AuthService {
           code: `wallet:${wallet.id}:${currency}`,
           name: `${currency} balance`,
         })),
+      });
+
+      const accounts = await tx.ledgerAccount.findMany({
+        where: {
+          walletId: wallet.id,
+          type: LedgerAccountType.USER_ASSET,
+        },
+        orderBy: {
+          currency: 'asc',
+        },
         select: {
           id: true,
           currency: true,
