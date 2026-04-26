@@ -1,19 +1,10 @@
 import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft } from "lucide-react";
-
-type transactionsProps = {
-  id: string;
-  title: string;
-  date: string;
-  amount: number;
-  currency: string;
-  type: "deposit" | "payout" | "conversion";
-  status: "complete" | "processing" | "pending";
-}[];
+import type { TransactionItem } from "../services/dashboard/types";
 
 export default function RecentTransactions({
   transactions,
 }: {
-  transactions: transactionsProps;
+  transactions: TransactionItem[];
 }) {
   const getTransactionIcon = (type: "deposit" | "payout" | "conversion") => {
     switch (type) {
@@ -28,9 +19,11 @@ export default function RecentTransactions({
     }
   };
 
-  const getStatusColor = (status: "complete" | "processing" | "pending") => {
-    switch (status) {
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "completed":
       case "complete":
+      case "successful":
         return "status-complete";
       case "processing":
         return "status-processing";
@@ -39,6 +32,30 @@ export default function RecentTransactions({
       default:
         return "status-complete";
     }
+  };
+
+  const formatMinorAmount = (amountMinor: string) => {
+    const amount = Number(amountMinor) / 100;
+    const sign = amount > 0 ? "+" : "";
+
+    return `${sign}${amount.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  const getTitle = (tx: TransactionItem) => {
+    if (tx.type === "deposit") {
+      return `Deposit · ${tx.sourceCurrency}`;
+    }
+
+    if (tx.type === "conversion") {
+      return `Conversion · ${tx.sourceCurrency} → ${tx.destinationCurrency}`;
+    }
+
+    return tx.recipient
+      ? `Payout · ${tx.recipient.bankCode} · ${tx.recipient.accountName}`
+      : `Payout · ${tx.sourceCurrency}`;
   };
 
   return (
@@ -50,16 +67,16 @@ export default function RecentTransactions({
               {getTransactionIcon(tx.type)}
             </div>
             <div className="flex-1">
-              <div className="font-display font-medium">{tx.title}</div>
+              <div className="font-display font-medium">{getTitle(tx)}</div>
               <div className="text-xs text-neutral-500 font-body mt-0.5">
-                {tx.date}
+                {new Date(tx.timestamp).toLocaleString()}
               </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
               <div className="font-display font-semibold">
-                {tx.amount} {tx.currency}
+                {formatMinorAmount(tx.amountMinor)} {tx.sourceCurrency}
               </div>
             </div>
             <span className={`status-badge ${getStatusColor(tx.status)}`}>

@@ -1,22 +1,17 @@
-const currencyFlags = {
+import type { WalletBalance } from "../services/dashboard/types";
+
+const currencyFlags: Record<WalletBalance["currency"], string> = {
   USD: "🇺🇸",
-  EUR: "🇪🇺",
   GBP: "🇬🇧",
+  EUR: "🇪🇺",
   NGN: "🇳🇬",
   KES: "🇰🇪",
-} as const;
-
-type Currency = keyof typeof currencyFlags;
-
-type balancesProps = {
-  currency: Currency;
-  amount: number;
-}[];
+};
 
 export default function CurrencyBalances({
   balances,
 }: {
-  balances: balancesProps;
+  balances: WalletBalance[];
 }) {
   return (
     <div>
@@ -24,16 +19,21 @@ export default function CurrencyBalances({
       <div className="space-y-2">
         {balances.map((balance) => (
           <div key={balance.currency} className="currency-balance">
-            <div className="flex items-center gap-3">
-              <span className="text-lg">{currencyFlags[balance.currency]}</span>
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-lg leading-none">
+                {currencyFlags[balance.currency]}
+              </span>
               <div className="font-display font-medium text-sm">
                 {balance.currency}
               </div>
             </div>
-            <div className="font-display font-semibold text-sm">
-              {balance.amount.toLocaleString("en-US", {
-                maximumFractionDigits: 2,
-              })}
+            <div className="text-right">
+              <div className="font-display font-semibold text-sm">
+                {balance.amount}
+              </div>
+              <div className="text-[11px] text-neutral-500 font-body">
+                ≈ ${Number(balance.usdEquivalentMinor) / 100}
+              </div>
             </div>
           </div>
         ))}

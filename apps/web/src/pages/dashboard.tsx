@@ -2,99 +2,75 @@ import { useState } from "react";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import {
   DepositModal,
-  PayoutModal,
-  QuickConvert,
   CurrencyBalances,
+  PayoutModal,
   RecentTransactions,
 } from "../components";
-
-type Balance = {
-  currency: "USD" | "EUR" | "GBP" | "NGN" | "KES";
-  amount: number;
-};
-
-type TransactionType = "deposit" | "conversion" | "payout";
-type TransactionStatus = "complete" | "processing" | "pending";
-
-type Transaction = {
-  id: string;
-  title: string;
-  date: string;
-  amount: number;
-  currency: string;
-  type: TransactionType;
-  status: TransactionStatus;
-};
+import {
+  useWalletBalances,
+  useRecentTransactions,
+} from "../services/dashboard/hooks";
 
 export default function Page() {
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
+  const balancesQuery = useWalletBalances();
+  const transactionsQuery = useRecentTransactions();
+  const isDashboardLoading =
+    balancesQuery.isPending || transactionsQuery.isPending;
 
-  const totalBalance = 12847.32;
-  const balances: Balance[] = [
-    { currency: "USD", amount: 5234.5 },
-    { currency: "EUR", amount: 2156.8 },
-    { currency: "GBP", amount: 1894.25 },
-    { currency: "NGN", amount: 2450000 },
-    { currency: "KES", amount: 1561440 },
-  ];
+  const balances = balancesQuery.data?.balances ?? [];
+  const totalBalance = Number(
+    balancesQuery.data?.summary.totalUsdEquivalent ?? "0",
+  );
 
-  const transactions: Transaction[] = [
-    {
-      id: "1",
-      title: "Deposit from Stripe",
-      date: "Apr 23, 2:45 PM",
-      amount: 500.0,
-      currency: "USD",
-      type: "deposit",
-      status: "complete",
-    },
-    {
-      id: "2",
-      title: "Convert USD → EUR",
-      date: "Apr 22, 11:20 AM",
-      amount: 425.0,
-      currency: "USD",
-      type: "conversion",
-      status: "complete",
-    },
-    {
-      id: "3",
-      title: "Payout to Bank",
-      date: "Apr 21, 3:15 PM",
-      amount: 1200.0,
-      currency: "GBP",
-      type: "payout",
-      status: "complete",
-    },
-    {
-      id: "4",
-      title: "Deposit from Bank",
-      date: "Apr 20, 9:30 AM",
-      amount: 2000.0,
-      currency: "EUR",
-      type: "deposit",
-      status: "complete",
-    },
-    {
-      id: "5",
-      title: "Convert EUR → NGN",
-      date: "Apr 19, 4:50 PM",
-      amount: 1500.0,
-      currency: "EUR",
-      type: "conversion",
-      status: "processing",
-    },
-    {
-      id: "6",
-      title: "Payout to Account",
-      date: "Apr 18, 2:00 PM",
-      amount: 750.0,
-      currency: "USD",
-      type: "payout",
-      status: "pending",
-    },
-  ];
+  if (isDashboardLoading) {
+    return (
+      <div className="px-8 py-8 max-w-7xl mx-auto animate-pulse">
+        <div className="mb-12">
+          <div className="h-4 w-24 bg-neutral-100 rounded mb-4" />
+          <div className="h-16 w-80 bg-neutral-100 rounded mb-3" />
+          <div className="h-4 w-64 bg-neutral-100 rounded" />
+        </div>
+
+        <div className="flex gap-3 mb-12">
+          <div className="h-11 w-32 bg-neutral-100 rounded" />
+          <div className="h-11 w-32 bg-neutral-100 rounded" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <div className="lg:col-span-1 border border-neutral-200 rounded-lg p-6">
+            <div className="h-6 w-36 bg-neutral-100 rounded mb-4" />
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="h-14 bg-neutral-100 rounded"
+                />
+              ))}
+            </div>
+          </div>
+          <div className="lg:col-span-2 border border-neutral-200 rounded-lg p-6">
+            <div className="h-6 w-40 bg-neutral-100 rounded mb-3" />
+            <div className="h-4 w-72 bg-neutral-100 rounded mb-8" />
+            <div className="h-12 w-20 bg-neutral-100 rounded" />
+          </div>
+        </div>
+
+        <div className="border border-neutral-200 rounded-lg overflow-hidden">
+          <div className="px-6 py-5 border-b border-neutral-200">
+            <div className="h-6 w-40 bg-neutral-100 rounded mb-2" />
+            <div className="h-4 w-80 bg-neutral-100 rounded" />
+          </div>
+          <div className="p-6 space-y-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="h-16 bg-neutral-100 rounded" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-8 py-8 max-w-7xl mx-auto">
@@ -115,7 +91,7 @@ export default function Page() {
           </h2>
         </div>
         <p className="text-sm text-neutral-500 font-body mt-3">
-          Across all your wallets
+          USD equivalent across all wallet balances
         </p>
       </div>
 
@@ -136,16 +112,44 @@ export default function Page() {
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-8 mb-12">
-        <div className="col-span-2">
-          <QuickConvert />
-        </div>
-        <div className="col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div className="lg:col-span-1">
           <CurrencyBalances balances={balances} />
+        </div>
+        <div className="lg:col-span-2 border border-neutral-200 rounded-lg p-6 h-fit">
+          <div className="flex items-start justify-between gap-6">
+            <div>
+              <h3 className="font-display text-lg font-semibold mb-2">
+                Wallet Summary
+              </h3>
+              <p className="text-sm text-neutral-500 font-body">
+                Live balances are derived from the ledger and updated after each
+                deposit or payout.
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-xs uppercase tracking-[0.16em] text-neutral-500 font-display mb-2">
+                Active Currencies
+              </div>
+              <div className="font-display text-4xl font-semibold">
+                {balances.length}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <RecentTransactions transactions={transactions.slice(0, 4)} />
+      <div className="border border-neutral-200 rounded-lg overflow-hidden">
+        <div className="px-6 py-5 border-b border-neutral-200">
+          <h3 className="font-display text-lg font-semibold">
+            Recent Activity
+          </h3>
+          <p className="text-sm text-neutral-500 font-body mt-1">
+            Latest deposits, conversions, and payouts from your wallet.
+          </p>
+        </div>
+        <RecentTransactions transactions={transactionsQuery.data?.data ?? []} />
+      </div>
 
       {showDepositModal && (
         <DepositModal onClose={() => setShowDepositModal(false)} />

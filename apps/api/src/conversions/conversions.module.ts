@@ -6,5 +6,6 @@ import { FxRatesService } from './fx-rates.service';
 @Module({
   controllers: [ConversionsController],
   providers: [ConversionsService, FxRatesService],
+  exports: [FxRatesService],
 })
 export class ConversionsModule {}

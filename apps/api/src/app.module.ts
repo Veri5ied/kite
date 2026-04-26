@@ -8,6 +8,7 @@ import { DepositsModule } from './deposits/deposits.module';
 import { PayoutsModule } from './payouts/payouts.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { WalletsModule } from './wallets/wallets.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TransactionsModule } from './transactions/transactions.module';
     DepositsModule,
     PayoutsModule,
     TransactionsModule,
+    WalletsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

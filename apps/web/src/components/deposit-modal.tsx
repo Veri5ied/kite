@@ -1,23 +1,21 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { useCreateDeposit } from "../services/dashboard/hooks";
+import type { SupportedCurrency } from "../services/dashboard/types";
 import { type ModalProps } from "../lib/utils";
 
 export default function DepositModal({ onClose }: ModalProps) {
-  const [depositMethod, setDepositMethod] = useState("bank");
   const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState<SupportedCurrency>("USD");
+  const createDeposit = useCreateDeposit(onClose);
 
-  const methods = [
-    { id: "bank", label: "Bank Transfer", desc: "Free, 1-3 business days" },
-    { id: "card", label: "Debit Card", desc: "Instant, 1-2% fee" },
-    { id: "ach", label: "ACH", desc: "Free, 2-3 business days" },
-  ];
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle deposit logic
-    console.log({ method: depositMethod, amount, currency });
-    onClose();
+
+    await createDeposit.mutateAsync({
+      amount,
+      currency,
+    });
   };
 
   return (
@@ -44,11 +42,17 @@ export default function DepositModal({ onClose }: ModalProps) {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
+                min="0"
+                step="0.01"
+                disabled={createDeposit.isPending}
                 className="flex-1 px-3 py-2.5 border border-neutral-200 rounded bg-white font-body text-sm focus:outline-none focus:ring-1 focus:ring-black"
               />
               <select
                 value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
+                onChange={(e) =>
+                  setCurrency(e.target.value as SupportedCurrency)
+                }
+                disabled={createDeposit.isPending}
                 className="px-3 py-2.5 border border-neutral-200 rounded bg-white font-body text-sm focus:outline-none focus:ring-1 focus:ring-black"
               >
                 <option>USD</option>
@@ -60,41 +64,10 @@ export default function DepositModal({ onClose }: ModalProps) {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-display font-medium mb-3">
-              Deposit Method
-            </label>
-            <div className="space-y-2">
-              {methods.map((method) => (
-                <label
-                  key={method.id}
-                  className="flex items-start gap-3 p-3 border border-neutral-200 rounded cursor-pointer hover:bg-neutral-50 transition-colors"
-                >
-                  <input
-                    type="radio"
-                    name="method"
-                    value={method.id}
-                    checked={depositMethod === method.id}
-                    onChange={(e) => setDepositMethod(e.target.value)}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <div className="font-display font-medium text-sm">
-                      {method.label}
-                    </div>
-                    <div className="text-xs text-neutral-500 font-body">
-                      {method.desc}
-                    </div>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </div>
-
           <div className="p-4 bg-neutral-50 border border-neutral-200 rounded">
             <p className="text-xs text-neutral-600 font-body">
-              <strong>Processing Time:</strong> Varies by method. You'll receive
-              a confirmation email once your deposit is received.
+              Deposits are simulated in this environment and will credit the
+              selected wallet balance immediately.
             </p>
           </div>
 
@@ -102,16 +75,17 @@ export default function DepositModal({ onClose }: ModalProps) {
             <button
               type="button"
               onClick={onClose}
+              disabled={createDeposit.isPending}
               className="btn-secondary flex-1"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={!amount}
+              disabled={!amount || createDeposit.isPending}
               className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Continue
+              {createDeposit.isPending ? "Depositing..." : "Deposit"}
             </button>
           </div>
         </form>
