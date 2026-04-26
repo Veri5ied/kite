@@ -90,3 +90,7 @@
     @apply bg-neutral-200 text-neutral-700;
   }
 }
+
+button {
+  @apply cursor-pointer;
+}
