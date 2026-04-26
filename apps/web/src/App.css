@@ -1,3 +1,92 @@
 @import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Figtree:wght@400;500;600;700&display=swap");
 
 @import "tailwindcss";
+
+@theme {
+  --font-body: "Figtree", sans-serif;
+  --font-display: "Sora", sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-neutral-200;
+  }
+
+  body {
+    @apply bg-white text-black font-body;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-semibold;
+  }
+
+  h1 {
+    @apply text-3xl leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl leading-tight;
+  }
+
+  h3 {
+    @apply text-xl leading-snug;
+  }
+}
+
+@layer components {
+  .sidebar-link {
+    @apply px-4 py-3 text-sm font-display font-medium transition-colors relative;
+  }
+
+  .sidebar-link:hover {
+    @apply bg-neutral-50;
+  }
+
+  .sidebar-link.active {
+    @apply text-black;
+  }
+
+  .sidebar-link.active::before {
+    @apply absolute left-0 top-0 bottom-0 w-1 bg-black;
+    content: "";
+  }
+
+  .btn-primary {
+    @apply px-4 py-2.5 bg-black text-white font-display font-medium text-sm rounded transition-opacity hover:opacity-80;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2.5 bg-neutral-100 text-black font-display font-medium text-sm rounded hover:bg-neutral-200 transition-colors;
+  }
+
+  .currency-balance {
+    @apply flex items-center justify-between p-3 border border-neutral-200 rounded transition-colors hover:bg-neutral-50;
+  }
+
+  .transaction-row {
+    @apply flex items-center justify-between py-4 border-b border-neutral-100 last:border-b-0 text-sm;
+  }
+
+  .status-badge {
+    @apply inline-block px-2.5 py-1 rounded text-xs font-medium font-display;
+  }
+
+  .status-pending {
+    @apply bg-neutral-200 text-neutral-700;
+  }
+
+  .status-complete {
+    @apply bg-neutral-100 text-neutral-600;
+  }
+
+  .status-processing {
+    @apply bg-neutral-200 text-neutral-700;
+  }
+}
