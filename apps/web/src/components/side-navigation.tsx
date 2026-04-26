@@ -1,8 +1,11 @@
 import { LogOut } from "lucide-react";
 import { NavLink } from "react-router";
+import { useLogout } from "../services/auth/hooks";
 import { CONVERT, DASHBOARD, TRANSACTIONS } from "../routes";
 
 function Sidenavigation() {
+  const logout = useLogout();
+
   return (
     <div className="w-64 border-r border-neutral-200 flex flex-col bg-white">
       <div className="px-6 py-6.5 border-neutral-200">
@@ -46,7 +49,7 @@ function Sidenavigation() {
 
       <div className="px-6 py-6 border-t border-neutral-200 space-y-4">
         <button
-          onClick={() => {}}
+          onClick={logout}
           className="w-full flex items-center justify-start gap-2 px-4 py-2.5 text-sm text-neutral-600 hover:text-black transition-colors"
         >
           <LogOut className="w-4 h-4" />

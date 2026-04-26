@@ -52,14 +52,26 @@ pnpm prisma:migrate --name init_payments_schema
 pnpm prisma:generate
 ```
 
-4. Start the API
+4. Start the app
 
 ```bash
-cd kite
-pnpm --filter api start:dev
+cd /Users/veri5ied/Desktop/kite
+pnpm dev
 ```
 
-The API runs on `http://localhost:3000`.
+This starts both:
+- the API on `http://localhost:3000`
+- the frontend on Vite's local development server
+
+If you want to run them separately:
+
+```bash
+pnpm dev:api
+```
+
+```bash
+pnpm dev:web
+```
 
 Swagger UI is available at:
 

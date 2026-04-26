@@ -5,3 +5,5 @@ export { default as SideNavigation } from "./side-navigation";
 export { default as DepositModal } from "./deposit-modal";
 export { default as PayoutModal } from "./payout-modal";
 export { default as QuickConvert } from "./quick-convert";
+export { default as ProtectedRoute } from "./protected-route";
+export { default as PublicOnlyRoute } from "./public-only-route";

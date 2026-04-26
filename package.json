@@ -4,7 +4,11 @@
   "version": "0.0.0",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
+    "dev": "concurrently \"pnpm dev:api\" \"pnpm dev:web\"",
     "dev:api": "pnpm --filter api start:dev",
     "dev:web": "pnpm --filter web dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }
