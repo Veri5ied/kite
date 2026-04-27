@@ -18,6 +18,8 @@ It supports:
 - Backend: `https://kite-l6s2.onrender.com`
 - Swagger: `https://kite-l6s2.onrender.com/api/docs` 
 - Loom walkthrough: 
+video one [Loom video one](https://www.loom.com/share/a247b9e0f13444dc9e2ebf49aac6a670)
+video two [Loom video two](https://www.loom.com/share/e07f3bce9ad44fd7af967a6273c4dd18)
 
 ## Stack
 
@@ -293,3 +295,5 @@ The first scaling steps I would take:
 - improve conversion UX around stale/expired quotes
 
 ## Loom
+- video one [Loom video one](https://www.loom.com/share/a247b9e0f13444dc9e2ebf49aac6a670)
+- video two [Loom video one](https://www.loom.com/share/e07f3bce9ad44fd7af967a6273c4dd18)
